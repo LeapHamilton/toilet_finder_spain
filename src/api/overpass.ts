@@ -16,17 +16,24 @@ function venueTypeFromTags(tags: Record<string, string>): VenueType {
 export async function fetchNearbyToilets(lat: number, lon: number, radiusMetres = 1500): Promise<Toilet[]> {
   const around = `(around:${radiusMetres},${lat},${lon})`;
   const query = `
-    [out:json][timeout:30];
+    [out:json][timeout:60];
     (
       node["amenity"="toilets"]${around};
+      way["amenity"="toilets"]${around};
       node["amenity"="fast_food"]["toilets"="yes"]${around};
+      way["amenity"="fast_food"]["toilets"="yes"]${around};
       node["amenity"="restaurant"]["toilets"="yes"]${around};
+      way["amenity"="restaurant"]["toilets"="yes"]${around};
       node["amenity"="cafe"]["toilets"="yes"]${around};
+      way["amenity"="cafe"]["toilets"="yes"]${around};
       node["amenity"="fuel"]["toilets"="yes"]${around};
+      way["amenity"="fuel"]["toilets"="yes"]${around};
       node["shop"="supermarket"]["toilets"="yes"]${around};
+      way["shop"="supermarket"]["toilets"="yes"]${around};
       node["shop"="mall"]["toilets"="yes"]${around};
+      way["shop"="mall"]["toilets"="yes"]${around};
     );
-    out body;
+    out center;
   `;
 
   const res = await fetch(OVERPASS_URL, {
@@ -39,15 +46,20 @@ export async function fetchNearbyToilets(lat: number, lon: number, radiusMetres 
 
   const json = await res.json();
 
-  return (json.elements as any[]).map((el) => ({
-    id: el.id,
-    lat: el.lat,
-    lon: el.lon,
-    name: el.tags?.name,
-    wheelchair: el.tags?.wheelchair,
-    fee: el.tags?.fee,
-    opening_hours: el.tags?.opening_hours,
-    changing_table: el.tags?.changing_table,
-    venueType: venueTypeFromTags(el.tags ?? {}),
-  }));
+  return (json.elements as any[])
+    .filter((el) => {
+      // nodes have lat/lon directly; ways have a center object
+      return (el.lat != null && el.lon != null) || el.center != null;
+    })
+    .map((el) => ({
+      id: el.id,
+      lat: el.lat ?? el.center.lat,
+      lon: el.lon ?? el.center.lon,
+      name: el.tags?.name,
+      wheelchair: el.tags?.wheelchair,
+      fee: el.tags?.fee,
+      opening_hours: el.tags?.opening_hours,
+      changing_table: el.tags?.changing_table,
+      venueType: venueTypeFromTags(el.tags ?? {}),
+    }));
 }
