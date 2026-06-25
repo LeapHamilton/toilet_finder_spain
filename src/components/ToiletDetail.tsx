@@ -2,6 +2,7 @@ import type { Toilet } from '../types';
 import { formatDistance } from '../utils/geo';
 import { getOpenStatus } from '../utils/openingHours';
 import { useLang } from '../i18n';
+import { VENUE_ICON, VENUE_LABEL_EN, VENUE_LABEL_ES } from '../utils/venue';
 
 interface Props {
   toilet: Toilet;
@@ -22,7 +23,8 @@ function Badge({ label, ok }: { label: string; ok: boolean | null }) {
 }
 
 export default function ToiletDetail({ toilet, onClose }: Props) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const venueLabels = lang === 'es' ? VENUE_LABEL_ES : VENUE_LABEL_EN;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${toilet.lat},${toilet.lon}&travelmode=walking`;
   const openStatus = getOpenStatus(toilet.opening_hours);
 
@@ -39,9 +41,9 @@ export default function ToiletDetail({ toilet, onClose }: Props) {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <div style={{ fontSize: 24, marginBottom: 4 }}>🚻</div>
+          <div style={{ fontSize: 24, marginBottom: 4 }}>{VENUE_ICON[toilet.venueType]}</div>
           <h2 style={{ margin: 0, fontSize: 18, color: '#111827' }}>
-            {toilet.name ?? t.publicToilet}
+            {toilet.name ?? venueLabels[toilet.venueType]}
           </h2>
           {toilet.distance != null && (
             <p style={{ margin: '4px 0 0', fontSize: 14, color: '#6b7280' }}>

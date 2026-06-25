@@ -23,7 +23,7 @@ function App() {
   const [selected, setSelected] = useState<Toilet | null>(null);
   const [view, setView] = useState<ViewMode>('map');
   const [radius, setRadius] = useState(1500);
-  const [filters, setFilters] = useState<Filters>({ free: false, wheelchair: false, changing: false });
+  const [filters, setFilters] = useState<Filters>({ free: false, wheelchair: false, changing: false, venuesOnly: false });
 
   const locate = useCallback(async (r = radius) => {
     setStatus('locating');
@@ -83,6 +83,7 @@ function App() {
     if (filters.free && t_.fee !== 'no') return false;
     if (filters.wheelchair && t_.wheelchair !== 'yes') return false;
     if (filters.changing && t_.changing_table !== 'yes') return false;
+    if (filters.venuesOnly && t_.venueType !== 'toilet') return false;
     return true;
   }), [toilets, filters]);
 

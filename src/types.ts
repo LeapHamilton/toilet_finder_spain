@@ -1,3 +1,5 @@
+export type VenueType = 'toilet' | 'fast_food' | 'restaurant' | 'cafe' | 'fuel' | 'supermarket' | 'mall';
+
 export interface Toilet {
   id: number;
   lat: number;
@@ -7,7 +9,8 @@ export interface Toilet {
   fee?: 'yes' | 'no';
   opening_hours?: string;
   changing_table?: 'yes' | 'no';
-  distance?: number; // metres, calculated client-side
+  distance?: number;
+  venueType: VenueType;
 }
 
 export type ViewMode = 'map' | 'list';

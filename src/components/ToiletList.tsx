@@ -2,6 +2,7 @@ import type { Toilet } from '../types';
 import { formatDistance } from '../utils/geo';
 import { getOpenStatus } from '../utils/openingHours';
 import { useLang } from '../i18n';
+import { VENUE_ICON, VENUE_LABEL_EN, VENUE_LABEL_ES } from '../utils/venue';
 
 interface Props {
   toilets: Toilet[];
@@ -11,7 +12,8 @@ interface Props {
 }
 
 export default function ToiletList({ toilets, selected, onSelect, onExpandRadius }: Props) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const venueLabels = lang === 'es' ? VENUE_LABEL_ES : VENUE_LABEL_EN;
 
   if (toilets.length === 0) {
     return (
@@ -44,10 +46,10 @@ export default function ToiletList({ toilets, selected, onSelect, onExpandRadius
               background: isSelected ? '#6366f1' : '#f3f4f6',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 22, flexShrink: 0,
-            }}>🚻</div>
+            }}>{VENUE_ICON[t_.venueType]}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontWeight: 600, fontSize: 15, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {t_.name ?? t.publicToilet}
+                {t_.name ?? venueLabels[t_.venueType]}
               </div>
               <div style={{ fontSize: 13, color: '#6b7280', marginTop: 2, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {t_.distance != null && <span>{formatDistance(t_.distance)}</span>}

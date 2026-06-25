@@ -7,6 +7,7 @@ import 'leaflet.markercluster';
 import type { Toilet } from '../types';
 import { formatDistance } from '../utils/geo';
 import { useLang } from '../i18n';
+import { VENUE_ICON } from '../utils/venue';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -21,17 +22,15 @@ const userIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-const toiletIcon = L.divIcon({
-  className: '',
-  html: `<div style="width:32px;height:32px;background:#ffffff;border:2px solid #6366f1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 6px rgba(0,0,0,0.25)">🚻</div>`,
-  iconAnchor: [16, 16],
-});
-
-const selectedIcon = L.divIcon({
-  className: '',
-  html: `<div style="width:36px;height:36px;background:#6366f1;border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px rgba(99,102,241,0.6)">🚻</div>`,
-  iconAnchor: [18, 18],
-});
+function makeIcon(emoji: string, selected: boolean) {
+  return L.divIcon({
+    className: '',
+    html: selected
+      ? `<div style="width:36px;height:36px;background:#6366f1;border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px rgba(99,102,241,0.6)">${emoji}</div>`
+      : `<div style="width:32px;height:32px;background:#ffffff;border:2px solid #6366f1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${emoji}</div>`,
+    iconAnchor: selected ? [18, 18] : [16, 16],
+  });
+}
 
 interface Props {
   userLat: number;
@@ -70,7 +69,8 @@ export default function ToiletMap({ userLat, userLon, toilets, selected, onSelec
 
     toilets.forEach((toilet) => {
       const isSelected = selected?.id === toilet.id;
-      const marker = L.marker([toilet.lat, toilet.lon], { icon: isSelected ? selectedIcon : toiletIcon })
+      const emoji = VENUE_ICON[toilet.venueType] ?? '🚻';
+      const marker = L.marker([toilet.lat, toilet.lon], { icon: makeIcon(emoji, isSelected) })
         .bindTooltip(
           `${toilet.name ?? t.publicToilet}${toilet.distance != null ? ` · ${formatDistance(toilet.distance)}` : ''}`,
           { permanent: false, direction: 'top' }
@@ -85,7 +85,11 @@ export default function ToiletMap({ userLat, userLon, toilets, selected, onSelec
     const map = mapRef.current;
     if (!map || !selected) return;
     map.setView([selected.lat, selected.lon], Math.max(map.getZoom(), 16), { animate: true });
-    markersRef.current.forEach((m, id) => m.setIcon(id === selected.id ? selectedIcon : toiletIcon));
+    markersRef.current.forEach((m, id) => {
+      const toilet = toilets.find(t => t.id === id);
+      const emoji = toilet ? (VENUE_ICON[toilet.venueType] ?? '🚻') : '🚻';
+      m.setIcon(makeIcon(emoji, id === selected.id));
+    });
   }, [selected]);
 
   return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;

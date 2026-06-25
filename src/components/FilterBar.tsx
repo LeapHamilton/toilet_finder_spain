@@ -4,6 +4,7 @@ export interface Filters {
   free: boolean;
   wheelchair: boolean;
   changing: boolean;
+  venuesOnly: boolean; // when true, hide fast_food/restaurant/etc. — show dedicated toilets only
 }
 
 interface Props {
@@ -35,9 +36,10 @@ export default function FilterBar({ filters, onChange, radius, onRadiusChange }:
   return (
     <div style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
-        {chip(filters.free, `💶 ${t.filterFree}`, () => toggle('free'))}
-        {chip(filters.wheelchair, `♿ ${t.filterWheelchair === '♿' ? (t as any).wheelchair ?? 'Accessible' : t.filterWheelchair}`, () => toggle('wheelchair'))}
-        {chip(filters.changing, `👶 ${t.filterChanging === '👶' ? (t as any).changingTable ?? 'Baby change' : t.filterChanging}`, () => toggle('changing'))}
+        {chip(filters.free,       `💶 ${t.filterFree}`,       () => toggle('free'))}
+        {chip(filters.wheelchair, `♿ ${t.filterWheelchair}`, () => toggle('wheelchair'))}
+        {chip(filters.changing,   `👶 ${t.filterChanging}`,   () => toggle('changing'))}
+        {chip(!filters.venuesOnly, `🍔 ${t.filterVenues}`,    () => toggle('venuesOnly'))}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontSize: 12, color: '#6b7280', whiteSpace: 'nowrap', minWidth: 80 }}>
