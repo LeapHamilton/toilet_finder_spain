@@ -20,7 +20,9 @@ const strings = {
     publicToilet: 'Aseo público',
     wheelchair: '♿ Accesible',
     fee: '💶 De pago',
+    feeWarning: '⚠️ Este aseo tiene tarifa — lleva monedas o tarjeta.',
     free: 'Gratuito',
+    freeConfirmed: '✅ Entrada gratuita',
     changingTable: '👶 Cambiador',
     directions: '🧭 Cómo llegar',
     distance: (d: string) => `📍 ${d} de distancia`,
@@ -34,8 +36,8 @@ const strings = {
     gotIt: 'Entendido',
     radius: (km: number) => `Radio: ${km} km`,
     filterFree: 'Gratuito',
-    filterWheelchair: '♿',
-    filterChanging: '👶',
+    filterWheelchair: 'Accesible',
+    filterChanging: 'Cambiador',
     allFilters: 'Todo',
     openHours: (h: string) => h,
   },
@@ -55,8 +57,10 @@ const strings = {
     expandRadius: 'Expand search radius',
     publicToilet: 'Public toilet',
     wheelchair: '♿ Accessible',
-    fee: '💶 Paid',
+    fee: '💶 Paid entry',
+    feeWarning: '⚠️ This toilet charges a fee — bring coins or a card.',
     free: 'Free',
+    freeConfirmed: '✅ Free entry',
     changingTable: '👶 Baby change',
     directions: '🧭 Get directions',
     distance: (d: string) => `📍 ${d} away`,
@@ -70,8 +74,8 @@ const strings = {
     gotIt: 'Got it',
     radius: (km: number) => `Radius: ${km} km`,
     filterFree: 'Free',
-    filterWheelchair: '♿',
-    filterChanging: '👶',
+    filterWheelchair: 'Accessible',
+    filterChanging: 'Baby change',
     allFilters: 'All',
     openHours: (h: string) => h,
   },
@@ -80,14 +84,21 @@ const strings = {
 export type Strings = typeof strings.es;
 
 const LangContext = createContext<{ lang: Lang; t: Strings; setLang: (l: Lang) => void }>({
-  lang: 'es',
-  t: strings.es,
+  lang: 'en',
+  t: strings.en,
   setLang: () => {},
 });
 
+function detectLang(): Lang {
+  const saved = localStorage.getItem('lang') as Lang | null;
+  if (saved === 'es' || saved === 'en') return saved;
+  // Auto-detect from browser language
+  const browserLang = navigator.language?.toLowerCase() ?? '';
+  return browserLang.startsWith('es') ? 'es' : 'en';
+}
+
 export function LangProvider({ children }: { children: ReactNode }) {
-  const saved = (localStorage.getItem('lang') as Lang) ?? 'es';
-  const [lang, setLangState] = useState<Lang>(saved);
+  const [lang, setLangState] = useState<Lang>(detectLang);
 
   function setLang(l: Lang) {
     localStorage.setItem('lang', l);

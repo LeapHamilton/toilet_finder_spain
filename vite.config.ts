@@ -8,9 +8,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Aseos Cercanos',
-        short_name: 'Aseos',
-        description: 'Encuentra aseos públicos cercanos en España',
+        name: 'Nearby Toilets',
+        short_name: 'Toilets',
+        description: 'Find nearby public toilets anywhere in the world',
         theme_color: '#6366f1',
         background_color: '#ffffff',
         display: 'standalone',

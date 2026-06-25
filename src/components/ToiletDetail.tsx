@@ -69,9 +69,28 @@ export default function ToiletDetail({ toilet, onClose }: Props) {
         )}
       </div>
 
+      {/* Prominent fee warning */}
+      {toilet.fee === 'yes' && (
+        <div style={{
+          margin: '10px 0 4px', padding: '10px 14px', borderRadius: 10,
+          background: '#fff7ed', border: '1.5px solid #f97316', color: '#9a3412',
+          fontSize: 14, fontWeight: 600,
+        }}>
+          {t.feeWarning}
+        </div>
+      )}
+      {toilet.fee === 'no' && (
+        <div style={{
+          margin: '10px 0 4px', padding: '10px 14px', borderRadius: 10,
+          background: '#f0fdf4', border: '1.5px solid #22c55e', color: '#166534',
+          fontSize: 14, fontWeight: 600,
+        }}>
+          {t.freeConfirmed}
+        </div>
+      )}
+
       <div style={{ margin: '10px 0' }}>
         <Badge label={t.wheelchair} ok={toilet.wheelchair === 'yes' ? true : toilet.wheelchair === 'no' ? false : null} />
-        <Badge label={t.fee} ok={toilet.fee === 'yes' ? false : toilet.fee === 'no' ? true : null} />
         <Badge label={t.changingTable} ok={toilet.changing_table === 'yes' ? true : toilet.changing_table === 'no' ? false : null} />
       </div>
 
